@@ -2,7 +2,9 @@
 
 Query Elk Log Content
 
-Usage:
+
+
+## Usage:
 
 ```php
     $url    = 'http://172.16.121.32:9200';
@@ -21,3 +23,6 @@ Usage:
     }, [strtotime('2025-01-01 00:00:00'), time()]);
     dd($list);
 ```
+
+QueryClient will query all of the target data and auto complete paginator
+工具将会查询所有的目标数据，并自动完成分页
