@@ -1,0 +1,23 @@
+{
+  "name": "ritaswc/elk-query-client",
+  "description": "Query Elk Log Content Client",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Ritaswc\\ElkQueryClient\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Charles",
+      "email": "ritaswc@163.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "ext-json": "*",
+    "ext-curl": "*",
+    "ext-mbstring": "*"
+  }
+}
