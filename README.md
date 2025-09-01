@@ -25,4 +25,5 @@ Query Elk Log Content
 ```
 
 QueryClient will query all of the target data and auto complete paginator
+
 工具将会查询所有的目标数据，并自动完成分页
