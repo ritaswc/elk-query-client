@@ -180,8 +180,8 @@ class QueryClient
         $curlError = curl_error($ch);
         $curlErrno = curl_errno($ch);
         curl_close($ch);
-        if ($logger) {
-            $logger->info("Elasticsearch result：" . json_encode($requestArr, JSON_UNESCAPED_UNICODE) . "\n" . $body);
+        if ($this->logger) {
+            $this->logger->info("Elasticsearch result：" . json_encode($param, JSON_UNESCAPED_UNICODE) . "\n" . $body);
         }
         return compact('body', 'httpCode', 'curlError', 'curlErrno');
     }
