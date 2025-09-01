@@ -8,7 +8,7 @@ Usage:
     $url    = 'http://172.16.121.32:9200';
     $client = new QueryClient($url, 'tiger_logs');
     $list   = [];
-    $client->query('keyword for search', function (array $item) use (&$list) {
+    $client->query(['keyword for search'], function (array $item) use (&$list) {
         $logContent = trim($item['fields']['event.original'][0] ?? '');
         $logContent = mb_substr($logContent, mb_strpos($logContent, '{'));
         $arr        = json_decode($logContent, true);
