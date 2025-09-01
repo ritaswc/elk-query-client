@@ -8,7 +8,8 @@ class QueryClient
     protected string $dataView    = '';
     protected int    $pageSize    = 500;
     protected array  $searchAfter = [];
-    const DEFAULT_PARAMS = '{"sort":[{"@timestamp":{"order":"desc","format":"strict_date_optional_time","unmapped_type":"boolean"}},{"_doc":{"order":"desc","unmapped_type":"boolean"}}],"track_total_hits":false,"fields":[{"field":"*","include_unmapped":"true"},{"field":"@timestamp","format":"strict_date_optional_time"}],"size":500,"version":true,"script_fields":{},"stored_fields":["*"],"runtime_mappings":{},"_source":false,"query":{"bool":{"must":[],"filter":[]}},{"range":{"@timestamp":{"format":"strict_date_optional_time","gte":"2000-00-00T00:00:00.343Z","lte":"2100-00-00T00:00:00.000Z"}}}],"should":[],"must_not":[]}},"highlight":{"pre_tags":["@kibana-highlighted-field@"],"post_tags":["@/kibana-highlighted-field@"],"fields":{"*":{}},"fragment_size":2147483647}}';
+    protected        $logger      = null;
+    const DEFAULT_PARAMS = '{"sort":[{"@timestamp":{"order":"desc","format":"strict_date_optional_time","unmapped_type":"boolean"}},{"_doc":{"order":"desc","unmapped_type":"boolean"}}],"track_total_hits":false,"fields":[{"field":"*","include_unmapped":"true"},{"field":"@timestamp","format":"strict_date_optional_time"}],"size":500,"version":true,"script_fields":{},"stored_fields":["*"],"runtime_mappings":{},"_source":false,"query":{"bool":{"must":[],"filter":[{"bool":{"filter":[]}},{"range":{"@timestamp":{"format":"strict_date_optional_time","gte":"2025-08-17T02:01:35.343Z","lte":"2025-09-01T02:01:35.343Z"}}}],"should":[],"must_not":[]}},"highlight":{"pre_tags":["@kibana-highlighted-field@"],"post_tags":["@/kibana-highlighted-field@"],"fields":{"*":{}},"fragment_size":2147483647}}';
 
     protected int $timeout = 600;
 
@@ -47,7 +48,7 @@ class QueryClient
         return clone $stdClass;
     }
 
-    protected function keywordArray(array $keywords): array
+    protected function keywordArray(array $keywords): object
     {
         $array = [];
         foreach ($keywords as $keyword) {
@@ -58,7 +59,10 @@ class QueryClient
             $item->multi_match->lenient = true;
             $array[]                    = $item;
         }
-        return $array;
+        $obj               = new \stdClass();
+        $obj->bool         = new \stdClass();
+        $obj->bool->filter = $array;
+        return $obj;
     }
 
     protected function setKeywords(object $param, array $keywords): object
@@ -84,6 +88,12 @@ class QueryClient
             }
         }
         return $param;
+    }
+
+    protected function setLogger($logger): QueryClient
+    {
+        $this->logger = $logger;
+        return $this;
     }
 
     protected function setTimeRange(object $param, array $timeRange): object
@@ -120,7 +130,7 @@ class QueryClient
     public function query(array $keywords, $callback, array $timeRange = [])
     {
         $totalCount = 0;
-        $param      = json_decode(self::DEFAULT_PARAMS, true);
+        $param      = json_decode(self::DEFAULT_PARAMS);
         if (count($timeRange)) {
             $this->setTimeRange($param, $timeRange);
         }
@@ -170,6 +180,9 @@ class QueryClient
         $curlError = curl_error($ch);
         $curlErrno = curl_errno($ch);
         curl_close($ch);
+        if ($logger) {
+            $logger->info("Elasticsearch result：" . json_encode($requestArr, JSON_UNESCAPED_UNICODE) . "\n" . $body);
+        }
         return compact('body', 'httpCode', 'curlError', 'curlErrno');
     }
 }
